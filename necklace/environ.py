@@ -1,83 +1,36 @@
-from collections import deque
 from dataclasses import dataclass
-from typing import Callable, Generic, Protocol, Self, Sequence, TypeAlias, TypeVar
-import sympy
+from typing import Generic, Protocol
+
+from .angles import ArithmeticFuncObject
+
+from .core import ArithmeticObject, Label, MathFunc, SymbolMap
 
 
-from .structures import MickeyMouse, Label, TeddyBear, Tripod
-
-Expr = sympy.Expr
+from .structures import MickeyMouse, TeddyBear, Tripod
 
 
-class ArithmeticObject(Protocol):
-    def __add__(self, other) -> Self:
+class Environment(Protocol):
+    def cos_mickey_mouse_angle(self, m: MickeyMouse) -> ArithmeticObject:
         ...
 
-    def __sub__(self, other) -> Self:
-        ...
-
-    def __mul__(self, other) -> Self:
-        ...
-
-    def __rmul__(self, other) -> Self:
-        ...
-
-    def __truediv__(self, other) -> Self:
-        ...
-
-    def __pow__(self, other) -> Self:
-        ...
-
-
-class ArithmeticFuncObject(Protocol):
-    def __add__(self, other) -> Self:
-        ...
-
-    def __sub__(self, other) -> Self:
-        ...
-
-    def __mul__(self, other) -> Self:
-        ...
-
-    def __rmul__(self, other) -> Self:
-        ...
-
-    def __div__(self, other) -> Self:
-        ...
-
-    def __pow__(self, other) -> Self:
-        ...
-
-    def __call__(self, *args, **kwargs) -> ArithmeticObject:
-        ...
-
-
-SymbolMap: TypeAlias = Callable[[Label], ArithmeticObject]
-MathFunc: TypeAlias = Callable[[ArithmeticObject], ArithmeticObject]
-
-
-class Environment(Protocol, Generic[Label]):
-    def cos_mickey_mouse_angle(self, m: MickeyMouse[Label]) -> ArithmeticObject:
-        ...
-
-    def mickey_mouse_angle(self, m: MickeyMouse[Label]) -> ArithmeticObject:
+    def mickey_mouse_angle(self, m: MickeyMouse) -> ArithmeticObject:
         ...
 
     ##
-    def cos_teddy_bear_angle(self, t: TeddyBear[Label]) -> ArithmeticObject:
+    def cos_teddy_bear_angle(self, t: TeddyBear) -> ArithmeticObject:
         ...
 
-    def teddy_bear_angle(self, t: TeddyBear[Label]) -> ArithmeticObject:
+    def teddy_bear_angle(self, t: TeddyBear) -> ArithmeticObject:
         ...
 
     ##
-    def tripod_angle(self, t: Tripod[Label]) -> ArithmeticObject:
+    def tripod_angle(self, t: Tripod) -> ArithmeticObject:
         ...
 
 
 @dataclass
-class ConcreteEnvironment(Environment):
-    symbol_map: SymbolMap
+class ConcreteEnvironment(Environment, Generic[Label]):
+    symbol_map: SymbolMap[Label]
 
     cos: MathFunc | ArithmeticFuncObject
     sin: MathFunc | ArithmeticFuncObject
@@ -133,18 +86,3 @@ class ConcreteEnvironment(Environment):
         ang2 = self.teddy_bear_angle(bear2)
 
         return ang0 + ang1 + ang2 - self.pi
-
-
-def default_symbol_map(label: int) -> Expr:
-    return sympy.symbols(f"r_{label}", positive=True)
-
-
-def sympy_env(smap: SymbolMap[Label] = default_symbol_map) -> Environment:
-    return ConcreteEnvironment(
-        smap,
-        cos=sympy.cos,
-        sin=sympy.sin,
-        acos=sympy.acos,
-        asin=sympy.asin,
-        pi=sympy.pi,
-    )

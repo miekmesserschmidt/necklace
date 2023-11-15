@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import Generic, Sequence, TypeVar
+from typing import Generic, Sequence
 
-
-Label = TypeVar("Label")
+from .core import Label
 
 
 @dataclass
