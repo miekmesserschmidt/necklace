@@ -1,9 +1,8 @@
+from typing import cast
 import sympy
-from necklace.necklace import Expr, Necklace, necklace_expression
 
-
-def smap(index: int) -> Expr:
-    return sympy.symbols(f"r_{index}", positive=True)
+from necklace.structures import Necklace
+from necklace.environs.sympy_env import env
 
 
 def test_necklace():
@@ -13,7 +12,7 @@ def test_necklace():
 def test_necklace_expr():
     n = Necklace(0, 1, (2, 2, 2, 2))
 
-    expr = necklace_expression(n, smap)
+    expr = env.necklace_dihedral_angle_sum(n)
     print(expr)
 
 
@@ -28,30 +27,18 @@ def test_necklace_expr_solve():
             2,
             2,
             2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
         ),
     )
 
-    expr = necklace_expression(n, smap)
-
+    expr = env.necklace_dihedral_angle_sum(n)
+    expr = cast(sympy.Expr, expr)
     expr_subs = expr.subs(
         {
-            smap(0): 1,
+            env.symbol_map(0): 1,
         }
     )
     print(expr_subs)
-    s = sympy.solve(expr_subs - 2 * sympy.pi, smap(2))
+    s = sympy.solve(expr_subs - 2 * sympy.pi, env.symbol_map(2))
     print(s)
 
 
@@ -69,14 +56,15 @@ def test_necklace_expr_solve_mismatch():
         ),
     )
 
-    expr = necklace_expression(n, smap)
+    expr = env.necklace_dihedral_angle_sum(n)
+    expr = cast(sympy.Expr, expr)
 
     expr_subs = expr.subs(
         {
-            smap(0): 1,
-            smap(1): 1,
+            env.symbol_map(0): 1,
+            env.symbol_map(1): 1,
         }
     )
     print(expr_subs)
-    s = sympy.solve(expr_subs - 2 * sympy.pi, smap(2))
+    s = sympy.solve(expr_subs - 2 * sympy.pi, env.symbol_map(2))
     print(s)
