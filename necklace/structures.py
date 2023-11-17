@@ -1,11 +1,14 @@
 from collections import deque
 from dataclasses import dataclass
-from typing import Generic, Iterable, Sequence, Tuple
+from itertools import chain
+from typing import Generic, Iterable, Self, Sequence, Tuple
+
+from .tools import all_rotations
 
 from .core import Label
 
 
-@dataclass
+@dataclass(frozen=True)
 class MickeyMouse(Generic[Label]):
     """
     An arrangement representing three mutually tangent circles called head, ear0, ear1.
@@ -17,7 +20,7 @@ class MickeyMouse(Generic[Label]):
     ear1: Label
 
 
-@dataclass
+@dataclass(frozen=True)
 class TeddyBear(Generic[Label]):
     """
     An arrangement representing four mutually tangent spheres called body, head, ear0, ear1.
@@ -30,7 +33,7 @@ class TeddyBear(Generic[Label]):
     hand1: Label
 
 
-@dataclass
+@dataclass(frozen=True)
 class Tripod(Generic[Label]):
     """
     An arrangement representing four mutually tangent spheres called apex, leg0, leg1, leg2.
@@ -43,7 +46,7 @@ class Tripod(Generic[Label]):
     leg2: Label
 
 
-@dataclass
+@dataclass(frozen=True)
 class Pooh(Generic[Label]):
     """
     An arrangement representing spheres body, head and hand0, hunny, hand1.
@@ -68,11 +71,23 @@ class Pooh(Generic[Label]):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class Necklace(Generic[Label]):
     body: Label
     head: Label
-    beads: Sequence[Label]
+    beads: Tuple[Label, ...]
+
+    def canonical(self) -> Self:
+        b0 = tuple(self.beads)
+        b1 = tuple(reversed(b0))
+        canonical_rotation = max(
+            chain(
+                all_rotations(b0),
+                all_rotations(b1),
+            )
+        )
+
+        return Necklace(self.body, self.head, canonical_rotation)
 
     def teddy_bear_sequence(self) -> Iterable[TeddyBear[Label]]:
         beads0 = deque(self.beads)
@@ -87,3 +102,34 @@ class Necklace(Generic[Label]):
             apex = b.body
             l0, l1, l2 = b.head, b.hand0, b.hand1
             yield Tripod(apex, l0, l1, l2)
+
+
+@dataclass(frozen=True)
+class Corona(Generic[Label]):
+    """
+    An arrangement representing three mutually tangent circles called head, ear0, ear1.
+    Connecting the center of the head with the centers of the ears and angle is formed.
+    """
+
+    center: Label
+    seq: Tuple[Label, ...]
+
+    def canonical(self) -> Self:
+        b0 = tuple(self.seq)
+        b1 = tuple(reversed(b0))
+        canonical_rotation = max(
+            chain(
+                all_rotations(b0),
+                all_rotations(b1),
+            )
+        )
+
+        return Corona(self.center, canonical_rotation)
+
+    def mickey_mouse_sequence(self) -> Iterable[MickeyMouse[Label]]:
+        beads0 = deque(self.seq)
+        beads1 = beads0.copy()
+        beads1.rotate()
+
+        for a, b in zip(beads0, beads1):
+            yield MickeyMouse(self.center, a, b)

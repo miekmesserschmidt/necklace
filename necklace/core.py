@@ -1,6 +1,14 @@
 from typing import Callable, Protocol, Self, TypeAlias, TypeVar
 
 
+class Comparable(Protocol):
+    def __lt__(self, other) -> bool:
+        ...
+
+    def __gt__(self, other) -> bool:
+        ...
+
+
 Label = TypeVar("Label")
 
 
