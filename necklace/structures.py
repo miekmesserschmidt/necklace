@@ -73,6 +73,10 @@ class Pooh(Generic[Label]):
 
 @dataclass(frozen=True)
 class Necklace(Generic[Label]):
+    """
+    An arrangement of spheres as though a snowman with body and head is wearing a necklace.
+    """
+
     body: Label
     head: Label
     beads: Tuple[Label, ...]
@@ -107,8 +111,7 @@ class Necklace(Generic[Label]):
 @dataclass(frozen=True)
 class Corona(Generic[Label]):
     """
-    An arrangement representing three mutually tangent circles called head, ear0, ear1.
-    Connecting the center of the head with the centers of the ears and angle is formed.
+    An arrangement representing discs around a central disc.
     """
 
     center: Label

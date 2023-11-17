@@ -3,7 +3,7 @@ from ..environ import Environment
 from ..structures import MickeyMouse
 
 
-def cos_mickey_mouse_angle(
+def cos_angle(
     m: MickeyMouse,
     env: Environment,
 ) -> ArithmeticObject:
@@ -14,9 +14,9 @@ def cos_mickey_mouse_angle(
     return ((c + a) ** 2 + (c + b) ** 2 - (a + b) ** 2) / (2 * (c + a) * (c + b))
 
 
-def mickey_mouse_angle(
+def angle(
     m: MickeyMouse,
     env: Environment,
 ) -> ArithmeticObject:
-    cos_ang = cos_mickey_mouse_angle(m, env)
+    cos_ang = cos_angle(m, env)
     return env.acos(cos_ang)
