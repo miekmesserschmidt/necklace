@@ -8,7 +8,7 @@ from necklace.environs.sympy_env import env
 
 
 def test_necklace():
-    n = Necklace("a", "b", "abc")
+    n = Necklace(0, 1, (0, 1, 2))
 
 
 def test_necklace_expr():
@@ -22,14 +22,7 @@ def test_necklace_expr_solve():
     n = Necklace(
         0,
         0,
-        (
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-        ),
+        (2, 2, 2, 2, 2, 2),
     )
 
     expr = necklace.dihedral_angle_sum(n, env)
@@ -48,14 +41,7 @@ def test_necklace_expr_solve_mismatch():
     n = Necklace(
         0,
         1,
-        (
-            2,
-            2,
-            2,
-            2,
-            2,
-            2,
-        ),
+        (2, 2, 2, 2, 2, 2),
     )
 
     expr = necklace.dihedral_angle_sum(n, env)
