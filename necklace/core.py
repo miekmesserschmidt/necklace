@@ -20,6 +20,9 @@ class ArithmeticObject(Protocol):
     def __truediv__(self, other) -> Self:
         ...
 
+    def __rtruediv__(self, other) -> Self:
+        ...
+
     def __pow__(self, other) -> Self:
         ...
 

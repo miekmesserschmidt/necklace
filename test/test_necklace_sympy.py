@@ -1,5 +1,7 @@
 from typing import cast
 import sympy
+from necklace.compute.necklace import necklace_dihedral_angle_sum
+
 
 from necklace.structures import Necklace
 from necklace.environs.sympy_env import env
@@ -12,7 +14,7 @@ def test_necklace():
 def test_necklace_expr():
     n = Necklace(0, 1, (2, 2, 2, 2))
 
-    expr = env.necklace_dihedral_angle_sum(n)
+    expr = necklace_dihedral_angle_sum(n, env)
     print(expr)
 
 
@@ -30,7 +32,7 @@ def test_necklace_expr_solve():
         ),
     )
 
-    expr = env.necklace_dihedral_angle_sum(n)
+    expr = necklace_dihedral_angle_sum(n, env)
     expr = cast(sympy.Expr, expr)
     expr_subs = expr.subs(
         {
@@ -56,7 +58,7 @@ def test_necklace_expr_solve_mismatch():
         ),
     )
 
-    expr = env.necklace_dihedral_angle_sum(n)
+    expr = necklace_dihedral_angle_sum(n, env)
     expr = cast(sympy.Expr, expr)
 
     expr_subs = expr.subs(
