@@ -1,4 +1,4 @@
-from typing import Callable, Protocol, Self, TypeAlias, TypeVar
+from typing import Any, Callable, Protocol, Self, TypeAlias, TypeVar
 
 
 class Comparable(Protocol):
@@ -58,5 +58,5 @@ class ArithmeticFuncObject(Protocol):
         ...
 
 
-SymbolMap: TypeAlias = Callable[[Label], ArithmeticObject]
+SymbolMap: TypeAlias = Callable[[Any], ArithmeticObject]
 MathFunc: TypeAlias = Callable[[ArithmeticObject], ArithmeticObject]

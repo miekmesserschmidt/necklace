@@ -1,7 +1,7 @@
 from collections import deque
 from dataclasses import dataclass
 from itertools import chain
-from typing import Dict, Generic, Iterable, Self, Sequence, Tuple, TypeAlias
+from typing import Any, Dict, Generic, Iterable, Self, Sequence, Set, Tuple, TypeAlias
 
 from .tools import all_rotations
 
@@ -21,6 +21,10 @@ class MickeyMouse:
     ear0: Label
     ear1: Label
 
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.head, self.ear0, self.ear1}
+
     def canonical(self) -> Self:
         a = max((self.ear0, self.ear1))
         b = min((self.ear0, self.ear1))
@@ -39,10 +43,24 @@ class TeddyBear:
     hand0: Label
     hand1: Label
 
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.head, self.head, self.hand0, self.hand1}
+
     def canonical(self) -> Self:
         a = max((self.hand0, self.hand1))
         b = min((self.hand0, self.hand1))
         return TeddyBear(self.body, self.head, a, b)
+
+    def body_mickey_mouses(self) -> Iterable[MickeyMouse]:
+        b = self.body
+        h = self.head
+        h0 = self.hand0
+        h1 = self.hand1
+
+        yield MickeyMouse(b, h, h0).canonical()
+        yield MickeyMouse(b, h, h1).canonical()
+        yield MickeyMouse(b, h0, h1).canonical()
 
 
 @dataclass(frozen=True)
@@ -56,6 +74,10 @@ class Tripod:
     leg0: Label
     leg1: Label
     leg2: Label
+
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.apex, self.leg0, self.leg1, self.leg2}
 
     def canonical(self) -> Self:
         seq = reversed(sorted((self.leg0, self.leg1, self.leg2)))
@@ -80,10 +102,14 @@ class Pooh:
     hunny: Label
     hand1: Label
 
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.body, self.head, self.hand0, self.hunny, self.hand1}
+
     def teddy_bears(self) -> Tuple[TeddyBear, TeddyBear]:
         return (
-            TeddyBear(self.body, self.head, self.hand0, self.hunny),
-            TeddyBear(self.body, self.head, self.hunny, self.hand1),
+            TeddyBear(self.body, self.head, self.hand0, self.hunny).canonical(),
+            TeddyBear(self.body, self.head, self.hunny, self.hand1).canonical(),
         )
 
     def canonical(self) -> Self:
@@ -101,6 +127,10 @@ class Necklace:
     body: Label
     head: Label
     beads: Tuple[Label, ...]
+
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.body, self.head} | set(self.beads)
 
     def canonical(self) -> Self:
         b0 = tuple(self.beads)
@@ -120,7 +150,19 @@ class Necklace:
         beads1.rotate()
 
         for a, b in zip(beads0, beads1):
-            yield TeddyBear(self.body, self.head, a, b)
+            yield TeddyBear(self.body, self.head, a, b).canonical()
+
+    def body_head_mickey_mouses(self) -> Iterable[MickeyMouse]:
+        for a in self.beads:
+            yield MickeyMouse(self.body, self.head, a).canonical()
+
+    def body_beads_mickey_mouses(self) -> Iterable[MickeyMouse]:
+        beads0 = deque(self.beads)
+        beads1 = beads0.copy()
+        beads1.rotate()
+
+        for a, b in zip(beads0, beads1):
+            yield MickeyMouse(self.body, a, b).canonical()
 
     def body_apex_tripods(self) -> Iterable[Tripod]:
         for b in self.teddy_bear_sequence():
@@ -137,6 +179,10 @@ class Corona:
 
     center: Label
     seq: Tuple[Label, ...]
+
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.center} | set(self.seq)
 
     def canonical(self) -> Self:
         b0 = tuple(self.seq)
@@ -156,7 +202,7 @@ class Corona:
         beads1.rotate()
 
         for a, b in zip(beads0, beads1):
-            yield MickeyMouse(self.center, a, b)
+            yield MickeyMouse(self.center, a, b).canonical()
 
 
 @dataclass(frozen=True)
@@ -186,16 +232,22 @@ class Raspberry:
     berry_structure: Dict[NodeId, Tuple[NodeId, ...]]
     label_map: Dict[NodeId, Label]
 
+    @property
+    def labels(self) -> Set[Label]:
+        return {self.center} | set(
+            self.label_map[k] for k in self.berry_structure.keys()
+        )
+
     def necklace(self, nid: NodeId) -> Necklace:
         body = self.center
         head = self.label_map[nid]
 
         beads = tuple(map(lambda n: self.label_map[n], self.berry_structure[nid]))
-        return Necklace(body, head, beads)
+        return Necklace(body, head, beads).canonical()
 
     def necklaces(self) -> Iterable[Necklace]:
         for nid in self.berry_structure.keys():
-            yield self.necklace(nid)
+            yield self.necklace(nid).canonical()
 
     def triangles(self) -> Iterable[Triangle]:
         seen = set()

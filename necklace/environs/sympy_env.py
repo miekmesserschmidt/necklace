@@ -1,21 +1,42 @@
-from typing import cast
+from typing import Any, cast
 import sympy
 
-from ..core import MathFunc, SymbolMap
-from ..environ import Environment, ConcreteEnvironment
+from ..structures import MickeyMouse, TeddyBear, Tripod
 
+from ..core import MathFunc, SymbolMap
+
+from ..environ import ConcreteEnvironment
 
 Expr = sympy.core.expr.Expr
 
 
-def default_symbol_map(label: int) -> Expr:
-    return sympy.symbols(f"r_{label}", positive=True)
+m = sympy.Function("m")
+t = sympy.Function("t")
+p = sympy.Function("p")
 
 
-default_symbol_map = cast(SymbolMap[int], default_symbol_map)
+def default_symbol_map(obj: Any) -> Expr:
+    match obj:
+        case int() as i:
+            return sympy.symbols(f"r_{i}", positive=True)
+
+        case MickeyMouse(c, a, b):
+            return m(c, a, b)
+
+        case TeddyBear(b, h, h0, h1):
+            return t(b, h, h0, h1)
+
+        case Tripod(a, u, v, w):
+            return p(a, u, v, w)
+
+        case _:
+            raise ValueError(f"{obj} unrecognized")
 
 
-def sympy_env(smap: SymbolMap[int] = default_symbol_map) -> ConcreteEnvironment:
+default_symbol_map = cast(SymbolMap, default_symbol_map)
+
+
+def sympy_env(smap: SymbolMap = default_symbol_map) -> ConcreteEnvironment:
     cos = cast(MathFunc, sympy.cos)
     sin = cast(MathFunc, sympy.sin)
     acos = cast(MathFunc, sympy.acos)
