@@ -1,6 +1,6 @@
 from collections import deque
 from dataclasses import dataclass
-from itertools import chain
+from itertools import chain, permutations
 from typing import Any, Dict, Generic, Iterable, Self, Sequence, Set, Tuple, TypeAlias
 
 from .tools import all_rotations
@@ -21,6 +21,17 @@ class MickeyMouse:
     ear0: Label
     ear1: Label
 
+    def __lt__(self, other: Self) -> bool:
+        return (
+            self.canonical().head,
+            self.canonical().ear0,
+            self.canonical().ear1,
+        ) < (
+            other.canonical().head,
+            other.canonical().ear0,
+            other.canonical().ear1,
+        )
+
     @property
     def labels(self) -> Set[Label]:
         return {self.head, self.ear0, self.ear1}
@@ -29,6 +40,9 @@ class MickeyMouse:
         a = max((self.ear0, self.ear1))
         b = min((self.ear0, self.ear1))
         return MickeyMouse(self.head, a, b)
+
+    def triangle(self) -> "Triangle":
+        return Triangle(self.head, self.ear0, self.ear1).canonical()
 
 
 @dataclass(frozen=True)
@@ -204,6 +218,10 @@ class Corona:
         for a, b in zip(beads0, beads1):
             yield MickeyMouse(self.center, a, b).canonical()
 
+    def triangle_sequence(self) -> Iterable["Triangle"]:
+        for m in self.mickey_mouse_sequence():
+            yield Triangle(m.head, m.ear0, m.ear1).canonical()
+
 
 @dataclass(frozen=True)
 class Triangle:
@@ -211,9 +229,22 @@ class Triangle:
     b: NodeId
     c: NodeId
 
+    def __lt__(self, other: Self) -> bool:
+        return (self.canonical().a, self.canonical().b, self.canonical().c) < (
+            other.canonical().a,
+            other.canonical().b,
+            other.canonical().c,
+        )
+
     def canonical(self) -> Self:
         sorted_ids = sorted((self.a, self.b, self.c), reverse=True)
         return Triangle(*sorted_ids)
+
+    def mickey_mouse_sequence(self) -> Iterable[MickeyMouse]:
+        a, b, c = self.a, self.b, self.c
+        yield MickeyMouse(a, b, c).canonical()
+        yield MickeyMouse(b, a, c).canonical()
+        yield MickeyMouse(c, a, b).canonical()
 
 
 @dataclass(frozen=True)

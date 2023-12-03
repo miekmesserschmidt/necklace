@@ -1,5 +1,7 @@
+from functools import cache
 from typing import Any, cast
 import sympy
+from sympy.core.backend import Symbol, Function
 
 from ..structures import MickeyMouse, TeddyBear, Tripod
 
@@ -10,15 +12,15 @@ from ..environ import ConcreteEnvironment
 Expr = sympy.core.expr.Expr
 
 
-m = sympy.Function("m")
-t = sympy.Function("t")
-p = sympy.Function("p")
+m = Function("m")
+t = Function("t")
+p = Function("p")
 
 
 def default_symbol_map(obj: Any) -> Expr:
     match obj:
         case int() as i:
-            return sympy.symbols(f"r_{i}", positive=True)
+            return Symbol(f"r_{i}", positive=True)
 
         case MickeyMouse(c, a, b):
             return m(c, a, b)
@@ -37,10 +39,12 @@ default_symbol_map = cast(SymbolMap, default_symbol_map)
 
 
 def sympy_env(smap: SymbolMap = default_symbol_map) -> ConcreteEnvironment:
-    cos = cast(MathFunc, sympy.cos)
-    sin = cast(MathFunc, sympy.sin)
-    acos = cast(MathFunc, sympy.acos)
-    asin = cast(MathFunc, sympy.asin)
+    import sympy.core.backend as symeng
+
+    cos = cast(MathFunc, symeng.cos)
+    sin = cast(MathFunc, symeng.sin)
+    acos = cast(MathFunc, symeng.acos)
+    asin = cast(MathFunc, symeng.asin)
 
     return ConcreteEnvironment(
         smap,
@@ -48,7 +52,7 @@ def sympy_env(smap: SymbolMap = default_symbol_map) -> ConcreteEnvironment:
         sin=sin,
         acos=acos,
         asin=asin,
-        pi=sympy.pi,
+        pi=symeng.pi,
     )
 
 

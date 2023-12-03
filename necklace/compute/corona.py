@@ -1,12 +1,17 @@
-from typing import Iterable, cast
+from itertools import chain
+from typing import Iterable, List, cast
+
+import sympy
 
 from necklace.compute import mickey_mouse
-from .core import sin_cos_identity
+from .triangle import all_triangles
+from .core import cos_pi_over_3_identity, sin_cos_identity
 
 
 from ..core import ArithmeticObject
 from ..environ import Environment
-from ..structures import Corona
+from ..structures import Corona, MickeyMouse, Triangle
+from necklace.compute import triangle
 
 
 def angle_sum(
@@ -22,16 +27,83 @@ def angle_sum(
     return result
 
 
+def matrix(c: Corona, mickey_mouse_columns: List[MickeyMouse]):
+    M = sympy.Matrix.zeros(1, len(mickey_mouse_columns) + 1)
+    for m in c.mickey_mouse_sequence():
+        i = mickey_mouse_columns.index(m)
+        M[0, i] += 1
+
+    M[0, -1] = 2 * sympy.pi
+
+    return M
+
+
+def whole_matrix(c: Corona, mickey_mouse_columns: List[MickeyMouse]):
+    triangles = sorted(all_triangles(c.labels))
+
+    M = sympy.Matrix.zeros(1 + len(triangles), len(mickey_mouse_columns) + 1)
+
+    M[0, :] = matrix(c, mickey_mouse_columns)[0, :]
+
+    for i, t in enumerate(triangles, start=1):
+        M[i, :] = triangle.matrix(t, mickey_mouse_columns)
+
+    return M
+
+
+def triangle_matrix(mickey_mouse_columns: List[MickeyMouse]):
+    labels = set(chain.from_iterable(m.labels for m in mickey_mouse_columns))
+    labels = list(labels)
+
+    triangles = sorted(all_triangles(labels))
+
+    M = sympy.Matrix.zeros(len(triangles), len(mickey_mouse_columns) + 1)
+
+    for i, t in enumerate(triangles):
+        M[i, :] = triangle.matrix(t, mickey_mouse_columns)
+
+    return M
+
+
 def equation(c: Corona, env: Environment) -> ArithmeticObject:
     return env.cos(angle_sum(c, env)) - 1
 
 
-def system(c: Corona, env: Environment) -> list[ArithmeticObject]:
+def sin_equation(c: Corona, env: Environment) -> ArithmeticObject:
+    return env.sin(angle_sum(c, env))
+
+
+def system(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
     eq = equation(c, env)
+    yield eq
 
-    mick_eqs = list(mickey_mouse.equation(m, env) for m in c.mickey_mouse_sequence())
-    mick_sin_cos_ids = list(
-        sin_cos_identity(env.symbol_map(m), env) for m in c.mickey_mouse_sequence()
-    )
+    for m in set(c.mickey_mouse_sequence()):
+        yield mickey_mouse.equation(m, env)
 
-    return [eq] + mick_eqs + mick_sin_cos_ids
+        ang = env.symbol_map(m)
+        yield sin_cos_identity(ang, env)
+
+        if m.head == m.ear0 == m.ear1:
+            yield cos_pi_over_3_identity(ang, env)
+
+
+def sin_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+    symb = env.symbol_map
+    sin = env.sin
+    yield from {sin(symb(m)) for m in set(c.mickey_mouse_sequence())}
+
+
+def cos_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+    symb = env.symbol_map
+    cos = env.cos
+    yield from {cos(symb(m)) for m in set(c.mickey_mouse_sequence())}
+
+
+def radii_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+    yield from {env.symbol_map(l) for l in c.labels}
+
+
+def variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+    yield from sin_variables(c, env)
+    yield from cos_variables(c, env)
+    yield from radii_variables(c, env)
