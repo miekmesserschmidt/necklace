@@ -10,7 +10,7 @@ from .core import cos_pi_over_3_identity, sin_cos_identity
 
 from ..core import ArithmeticObject
 from ..environ import Environment
-from ..structures import Corona, MickeyMouse, Triangle
+from ..structures import Corona, MickeyMouse, MickeyMouseAngle, Triangle
 from necklace.compute import triangle
 
 
@@ -22,18 +22,16 @@ def angle_sum(
     result = cast(ArithmeticObject, result)
 
     for m in c.mickey_mouse_sequence():
-        result = env.symbol_map(m.canonical()) + result
+        result = env.symbol_map(MickeyMouseAngle(m.canonical())) + result
 
     return result
 
 
 def matrix(c: Corona, mickey_mouse_columns: List[MickeyMouse]):
-    M = sympy.Matrix.zeros(1, len(mickey_mouse_columns) + 1)
+    M = sympy.Matrix.zeros(1, len(mickey_mouse_columns))
     for m in c.mickey_mouse_sequence():
         i = mickey_mouse_columns.index(m)
         M[0, i] += 1
-
-    M[0, -1] = 2 * sympy.pi
 
     return M
 
@@ -41,7 +39,7 @@ def matrix(c: Corona, mickey_mouse_columns: List[MickeyMouse]):
 def whole_matrix(c: Corona, mickey_mouse_columns: List[MickeyMouse]):
     triangles = sorted(all_triangles(c.labels))
 
-    M = sympy.Matrix.zeros(1 + len(triangles), len(mickey_mouse_columns) + 1)
+    M = sympy.Matrix.zeros(1 + len(triangles), len(mickey_mouse_columns))
 
     M[0, :] = matrix(c, mickey_mouse_columns)[0, :]
 
@@ -90,13 +88,13 @@ def system(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
 def sin_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
     symb = env.symbol_map
     sin = env.sin
-    yield from {sin(symb(m)) for m in set(c.mickey_mouse_sequence())}
+    yield from {sin(symb(MickeyMouseAngle(m))) for m in set(c.mickey_mouse_sequence())}
 
 
 def cos_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
     symb = env.symbol_map
     cos = env.cos
-    yield from {cos(symb(m)) for m in set(c.mickey_mouse_sequence())}
+    yield from {cos(symb(MickeyMouseAngle(m))) for m in set(c.mickey_mouse_sequence())}
 
 
 def radii_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:

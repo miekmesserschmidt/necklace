@@ -25,10 +25,10 @@ def all_triangles(symbols: List[NodeId]) -> Iterable[Triangle]:
 
 
 def matrix(t: Triangle, mickey_mouse_columns: List[MickeyMouse]):
-    M = sympy.Matrix.zeros(1, len(mickey_mouse_columns) + 1)
+    M = sympy.Matrix.zeros(1, len(mickey_mouse_columns))
     for m in t.mickey_mouse_sequence():
         i = mickey_mouse_columns.index(m)
         M[0, i] += 1
 
-    M[0, -1] = sympy.pi
+    # M[0, -1] = sympy.pi
     return M

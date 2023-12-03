@@ -5,6 +5,7 @@ from necklace.poly.tools import ensure_square_of_sub_expressions
 from necklace.structures import (
     Corona,
     MickeyMouse,
+    MickeyMouseAngle,
 )
 
 from typing import cast
@@ -24,10 +25,10 @@ def test_corona_eq():
     s = env.symbol_map
     expected = (
         env.cos(
-            s(MickeyMouse(0, 1, 2).canonical())
-            + s(MickeyMouse(0, 2, 3).canonical())
-            + s(MickeyMouse(0, 3, 4).canonical())
-            + s(MickeyMouse(0, 4, 1).canonical())
+            s(MickeyMouseAngle(MickeyMouse(0, 1, 2).canonical()))
+            + s(MickeyMouseAngle(MickeyMouse(0, 2, 3).canonical()))
+            + s(MickeyMouseAngle(MickeyMouse(0, 3, 4).canonical()))
+            + s(MickeyMouseAngle(MickeyMouse(0, 4, 1).canonical()))
         )
         - 1
     )
@@ -40,6 +41,7 @@ def test_matrix():
     mms = sorted(set(mickey_mouse.all_mickey_mouses([0, 1])))
 
     M = corona.matrix(c, mms)
+    print(M)
 
     assert M == sympy.Matrix([[0, 0, 4, 0, 0, 0]])
 

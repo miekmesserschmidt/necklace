@@ -46,6 +46,16 @@ class MickeyMouse:
 
 
 @dataclass(frozen=True)
+class MickeyMouseAngle:
+    mm: MickeyMouse
+
+
+@dataclass(frozen=True)
+class MickeyMouseComplex:
+    mm: MickeyMouse
+
+
+@dataclass(frozen=True)
 class TeddyBear:
     """
     An arrangement representing four mutually tangent spheres called body, head, ear0, ear1.

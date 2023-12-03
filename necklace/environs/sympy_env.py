@@ -3,7 +3,13 @@ from typing import Any, cast
 import sympy
 from sympy.core.backend import Symbol, Function
 
-from ..structures import MickeyMouse, TeddyBear, Tripod
+from ..structures import (
+    MickeyMouse,
+    MickeyMouseAngle,
+    MickeyMouseComplex,
+    TeddyBear,
+    Tripod,
+)
 
 from ..core import MathFunc, SymbolMap
 
@@ -13,6 +19,9 @@ Expr = sympy.core.expr.Expr
 
 
 m = Function("m")
+mma = Function("mma")
+mmc = Function("mmc")
+
 t = Function("t")
 p = Function("p")
 
@@ -24,6 +33,12 @@ def default_symbol_map(obj: Any) -> Expr:
 
         case MickeyMouse(c, a, b):
             return m(c, a, b)
+
+        case MickeyMouseAngle(MickeyMouse(c, a, b)):
+            return mma(c, a, b)
+
+        case MickeyMouseComplex(MickeyMouse(c, a, b)):
+            return mmc(c, a, b)
 
         case TeddyBear(b, h, h0, h1):
             return t(b, h, h0, h1)
