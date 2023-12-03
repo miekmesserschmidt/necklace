@@ -10,7 +10,13 @@ from .core import cos_pi_over_3_identity, sin_cos_identity
 
 from ..core import ArithmeticObject
 from ..environ import Environment
-from ..structures import Corona, MickeyMouse, MickeyMouseAngle, Triangle
+from ..structures import (
+    Corona,
+    MickeyMouse,
+    MickeyMouseAngle,
+    MickeyMouseComplex,
+    Triangle,
+)
 from necklace.compute import triangle
 
 
@@ -85,16 +91,52 @@ def system(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
             yield cos_pi_over_3_identity(ang, env)
 
 
-def sin_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
-    symb = env.symbol_map
-    sin = env.sin
-    yield from {sin(symb(MickeyMouseAngle(m))) for m in set(c.mickey_mouse_sequence())}
+# def sin_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+#     symb = env.symbol_map
+#     sin = env.sin
+#     yield from {sin(symb(MickeyMouseAngle(m))) for m in set(c.mickey_mouse_sequence())}
 
 
-def cos_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+# def cos_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+#     # symb = env.symbol_map
+#     cos = env.cos
+#     yield from {cos(a) for a in angle_variables(c, env)}
+#     # yield from {cos(symb(MickeyMouseAngle(m))) for m in set(c.mickey_mouse_sequence())}
+
+
+def complex_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
     symb = env.symbol_map
-    cos = env.cos
-    yield from {cos(symb(MickeyMouseAngle(m))) for m in set(c.mickey_mouse_sequence())}
+    M = list(set(c.mickey_mouse_sequence()))
+    M.sort()
+    yield from {symb(MickeyMouseComplex(m)) for m in M}
+
+
+def angle_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
+    symb = env.symbol_map
+    M = list(set(c.mickey_mouse_sequence()))
+    M.sort()
+    yield from {symb(MickeyMouseAngle(m)) for m in M}
+
+
+def complex_equation(c: Corona, env: Environment) -> ArithmeticObject:
+    result: ArithmeticObject = 1
+    for m in c.mickey_mouse_sequence():
+        w = mickey_mouse.complex_(m, env)
+        result *= w
+
+    return result - 1
+
+
+def mickey_mouse_complex_system(c: Corona, env: Environment) -> List[ArithmeticObject]:
+    M = list(set(c.mickey_mouse_sequence()))
+    M.sort()
+    return [mickey_mouse.complex_equation(m, env) for m in M]
+
+
+def complex_system(c: Corona, env: Environment) -> List[ArithmeticObject]:
+    M = list(set(c.mickey_mouse_sequence()))
+    M.sort()
+    return mickey_mouse_complex_system(c, env) + [complex_equation(c, env)]
 
 
 def radii_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:

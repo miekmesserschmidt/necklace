@@ -84,6 +84,12 @@ def test_whole_matrix2():
     )
 
 
+def test_corona_complex_system():
+    c = Corona(0, (1, 2, 3, 4))
+    system = corona.complex_system(c, env)
+    print(system)
+
+
 # def test_corona_system():
 #     c = Corona(
 #         0,

@@ -2,7 +2,7 @@ from itertools import combinations, product
 from typing import Iterable, List, Set
 from ..core import ArithmeticObject, SymbolMap
 from ..environ import Environment
-from ..structures import Label, MickeyMouse
+from ..structures import Label, MickeyMouse, MickeyMouseAngle, MickeyMouseComplex
 
 
 def all_mickey_mouses_heads_ears(
@@ -35,8 +35,27 @@ def angle(
     m: MickeyMouse,
     env: Environment,
 ) -> ArithmeticObject:
-    cos_ang = cos_angle(m, env)
-    return env.acos(cos_ang)
+    mma = MickeyMouseAngle(m)
+    return env.symbol_map(mma)
+
+
+def complex_(
+    m: MickeyMouse,
+    env: Environment,
+) -> ArithmeticObject:
+    mmc = MickeyMouseComplex(m)
+    return env.symbol_map(mmc)
+
+
+def complex_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
+    w = complex_(m, env)
+    a = angle(m, env)
+
+    cos_a = env.cos(a)
+
+    left = w**2 + 1
+    right = 2 * w * cos_a
+    return left - right
 
 
 def equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:

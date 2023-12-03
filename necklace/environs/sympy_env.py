@@ -19,8 +19,8 @@ Expr = sympy.core.expr.Expr
 
 
 m = Function("m")
-mma = Function("mma")
-mmc = Function("mmc")
+mm_angle = Function("a")
+mm_complex = Function("w")
 
 t = Function("t")
 p = Function("p")
@@ -35,10 +35,10 @@ def default_symbol_map(obj: Any) -> Expr:
             return m(c, a, b)
 
         case MickeyMouseAngle(MickeyMouse(c, a, b)):
-            return mma(c, a, b)
+            return mm_angle(c, a, b)
 
         case MickeyMouseComplex(MickeyMouse(c, a, b)):
-            return mmc(c, a, b)
+            return mm_complex(c, a, b)
 
         case TeddyBear(b, h, h0, h1):
             return t(b, h, h0, h1)
