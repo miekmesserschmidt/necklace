@@ -42,7 +42,7 @@ sin_cos_eqs = [
     for m in set(c.mickey_mouse_sequence())
 ]
 mickey_mouse_system = [
-    mickey_mouse.equation(m, env) for m in set(c.mickey_mouse_sequence())
+    mickey_mouse.cosine_rule_equation(m, env) for m in set(c.mickey_mouse_sequence())
 ]
 
 

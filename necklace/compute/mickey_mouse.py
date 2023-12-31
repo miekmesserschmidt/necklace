@@ -2,7 +2,13 @@ from itertools import combinations, product
 from typing import Iterable, List, Set
 from ..core import ArithmeticObject, SymbolMap
 from ..environ import Environment
-from ..structures import Label, MickeyMouse, MickeyMouseAngle, MickeyMouseComplex
+from ..structures import (
+    Label,
+    MickeyMouse,
+    MickeyMouseAngle,
+    MickeyMouseComplex,
+    MickeyMouseComplexMultiplier,
+)
 
 
 def all_mickey_mouses_heads_ears(
@@ -47,7 +53,28 @@ def complex_(
     return env.symbol_map(mmc)
 
 
-def complex_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
+def complex_multiplier(
+    m: MickeyMouse,
+    env: Environment,
+) -> ArithmeticObject:
+    mmc = MickeyMouseComplexMultiplier(m)
+    return env.symbol_map(mmc)
+
+
+def complex_multiplier_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
+    z = complex_multiplier(m, env)
+    w = complex_(m, env)
+
+    c = env.symbol_map(m.head)
+    a = env.symbol_map(m.ear0)
+    b = env.symbol_map(m.ear1)
+
+    return z * (c + a) - w * (c + b)
+
+
+def on_complex_unit_circle_equation(
+    m: MickeyMouse, env: Environment
+) -> ArithmeticObject:
     w = complex_(m, env)
     a = angle(m, env)
 
@@ -58,12 +85,24 @@ def complex_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
     return left - right
 
 
-def equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
+def cosine_rule_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
     c = env.symbol_map(m.head)
     a = env.symbol_map(m.ear0)
     b = env.symbol_map(m.ear1)
 
-    ang = env.symbol_map(m)
+    ang = angle(m, env)
+
+    left = 2 * (c + a) * (c + b) * env.cos(ang)
+    right = (c + a) ** 2 + (c + b) ** 2 - (a + b) ** 2
+    return left - right
+
+
+def cosine_rule_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
+    c = env.symbol_map(m.head)
+    a = env.symbol_map(m.ear0)
+    b = env.symbol_map(m.ear1)
+
+    ang = angle(m, env)
 
     left = 2 * (c + a) * (c + b) * env.cos(ang)
     right = (c + a) ** 2 + (c + b) ** 2 - (a + b) ** 2

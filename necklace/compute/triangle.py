@@ -1,5 +1,6 @@
 from itertools import combinations
 from typing import Iterable, List, cast
+from psutil import AccessDenied
 
 import sympy
 
@@ -32,3 +33,27 @@ def matrix(t: Triangle, mickey_mouse_columns: List[MickeyMouse]):
 
     # M[0, -1] = sympy.pi
     return M
+
+
+def complex_angle_sum_equation(t: Triangle, env: Environment):
+    A = MickeyMouse(t.a, t.b, t.c).canonical()
+    B = MickeyMouse(t.b, t.a, t.c).canonical()
+    C = MickeyMouse(t.c, t.b, t.a).canonical()
+
+    w0 = mickey_mouse.complex_(A, env)
+    w1 = mickey_mouse.complex_(B, env)
+    w2 = mickey_mouse.complex_(C, env)
+
+    return w0 * w1 * w2 + 1
+
+
+def real_angle_sum_equation(t: Triangle, env: Environment):
+    A = MickeyMouse(t.a, t.b, t.c).canonical()
+    B = MickeyMouse(t.b, t.a, t.c).canonical()
+    C = MickeyMouse(t.c, t.b, t.a).canonical()
+
+    a0 = mickey_mouse.angle(A, env)
+    a1 = mickey_mouse.angle(B, env)
+    a2 = mickey_mouse.angle(C, env)
+
+    return a0 + a1 + a2 - env.pi

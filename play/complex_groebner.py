@@ -5,7 +5,7 @@ from typing import Tuple
 import sympy
 from necklace.compute.corona import (
     angle_variables,
-    complex_equation,
+    generalized_root_of_unity_equation,
     complex_system,
     complex_variables,
 )
@@ -15,7 +15,7 @@ from necklace.structures import Corona
 env = sympy_env.env
 
 # %%
-c = Corona(0, (1, 2, 3, 4))
+c = Corona(0, (1, 2, 3, 4, 5))
 
 # %%
 system = complex_system(c, env)
@@ -55,4 +55,6 @@ G = sympy.groebner(
 for p in G:
     print(p)
 
+# %%
+G[-1].factor()
 # %%

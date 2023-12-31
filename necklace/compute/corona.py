@@ -82,7 +82,7 @@ def system(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
     yield eq
 
     for m in set(c.mickey_mouse_sequence()):
-        yield mickey_mouse.equation(m, env)
+        yield mickey_mouse.cosine_rule_equation(m, env)
 
         ang = env.symbol_map(m)
         yield sin_cos_identity(ang, env)
@@ -118,7 +118,7 @@ def angle_variables(c: Corona, env: Environment) -> Iterable[ArithmeticObject]:
     yield from {symb(MickeyMouseAngle(m)) for m in M}
 
 
-def complex_equation(c: Corona, env: Environment) -> ArithmeticObject:
+def generalized_root_of_unity_equation(c: Corona, env: Environment) -> ArithmeticObject:
     result: ArithmeticObject = 1
     for m in c.mickey_mouse_sequence():
         w = mickey_mouse.complex_(m, env)
@@ -127,7 +127,9 @@ def complex_equation(c: Corona, env: Environment) -> ArithmeticObject:
     return result - 1
 
 
-def complex_equation_sq(c: Corona, env: Environment) -> ArithmeticObject:
+def generalized_root_of_unity_equation_sq(
+    c: Corona, env: Environment
+) -> ArithmeticObject:
     result: ArithmeticObject = 1
     for m in c.mickey_mouse_sequence():
         w = mickey_mouse.complex_(m, env)
@@ -139,14 +141,14 @@ def complex_equation_sq(c: Corona, env: Environment) -> ArithmeticObject:
 def mickey_mouse_complex_system(c: Corona, env: Environment) -> List[ArithmeticObject]:
     M = list(set(c.mickey_mouse_sequence()))
     M.sort()
-    return [mickey_mouse.complex_equation(m, env) for m in M]
+    return [mickey_mouse.on_complex_unit_circle_equation(m, env) for m in M]
 
 
 def complex_system(c: Corona, env: Environment) -> List[ArithmeticObject]:
     M = list(set(c.mickey_mouse_sequence()))
     M.sort()
     return mickey_mouse_complex_system(c, env) + [
-        complex_equation(c, env),
+        generalized_root_of_unity_equation(c, env),
         # complex_equation_sq(c, env),
     ]
 

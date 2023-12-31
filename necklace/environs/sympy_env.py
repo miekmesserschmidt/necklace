@@ -7,6 +7,7 @@ from ..structures import (
     MickeyMouse,
     MickeyMouseAngle,
     MickeyMouseComplex,
+    MickeyMouseComplexMultiplier,
     TeddyBear,
     Tripod,
 )
@@ -21,6 +22,7 @@ Expr = sympy.core.expr.Expr
 m = Function("m")
 mm_angle = Function("a")
 mm_complex = Function("w")
+mm_complex_multiplier = Function("z")
 
 t = Function("t")
 p = Function("p")
@@ -39,6 +41,9 @@ def default_symbol_map(obj: Any) -> Expr:
 
         case MickeyMouseComplex(MickeyMouse(c, a, b)):
             return mm_complex(c, a, b)
+
+        case MickeyMouseComplexMultiplier(MickeyMouse(c, a, b)):
+            return mm_complex_multiplier(c, a, b)
 
         case TeddyBear(b, h, h0, h1):
             return t(b, h, h0, h1)

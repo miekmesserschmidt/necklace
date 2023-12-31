@@ -56,6 +56,11 @@ class MickeyMouseComplex:
 
 
 @dataclass(frozen=True)
+class MickeyMouseComplexMultiplier:
+    mm: MickeyMouse
+
+
+@dataclass(frozen=True)
 class TeddyBear:
     """
     An arrangement representing four mutually tangent spheres called body, head, ear0, ear1.
@@ -220,13 +225,18 @@ class Corona:
 
         return Corona(self.center, canonical_rotation)
 
-    def mickey_mouse_sequence(self) -> Iterable[MickeyMouse]:
+    def mickey_mouse_sequence(self, canonical: bool = True) -> Iterable[MickeyMouse]:
         beads0 = deque(self.seq)
         beads1 = beads0.copy()
-        beads1.rotate()
+        beads1.rotate(-1)
 
-        for a, b in zip(beads0, beads1):
-            yield MickeyMouse(self.center, a, b).canonical()
+        if canonical:
+            for a, b in zip(beads0, beads1):
+                yield MickeyMouse(self.center, a, b).canonical()
+
+        if not canonical:
+            for a, b in zip(beads0, beads1):
+                yield MickeyMouse(self.center, a, b)
 
     def triangle_sequence(self) -> Iterable["Triangle"]:
         for m in self.mickey_mouse_sequence():
