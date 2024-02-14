@@ -1,6 +1,5 @@
 from itertools import combinations
 from typing import Iterable, List, cast
-from psutil import AccessDenied
 
 import sympy
 
