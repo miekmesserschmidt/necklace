@@ -5,10 +5,7 @@ from typing import Iterable, Sequence, Tuple, TypeVar
 from .core import ArithmeticObject
 
 
-T = TypeVar("T")
-
-
-def all_rotations(s: Sequence[T]) -> Iterable[Tuple[T, ...]]:
+def all_rotations[T](s: Sequence[T]) -> Iterable[Tuple[T, ...]]:
     s = list(s)
     N = len(s)
 
