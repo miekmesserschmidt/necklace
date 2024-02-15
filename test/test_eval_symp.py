@@ -1,6 +1,5 @@
 from typing import cast
 import sympy
-from necklace.compute.computer import DefaultComputer
 from necklace.core import ArithmeticFuncObject, ArithmeticObject
 from necklace.structures import (
     Corona,

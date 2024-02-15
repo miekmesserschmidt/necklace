@@ -2,6 +2,8 @@ from functools import reduce
 from typing import Any, cast
 import sympy
 
+from ..tools import sum_
+
 from ..core import ArithmeticFuncObject, ArithmeticObject
 
 from ..structures import (
@@ -69,33 +71,29 @@ def evaluate(obj: Any) -> ArithmeticObject:
             return acos(cos_ang)
 
         case TripodSolidAngle(tp):
-            solid_ang_sum = reduce(
-                lambda a, b: a + b,
-                (evaluate(TeddyBearDihedralAngle(tb)) for tb in tp.teddy_bears()),
+            solid_ang_sum = sum_(
+                evaluate(TeddyBearDihedralAngle(tb)) for tb in tp.teddy_bears()
             )
+
             return solid_ang_sum - pi
 
         case NecklaceDihedralAngleSum(n):
-            solid_ang_sum = reduce(
-                lambda a, b: a + b,
-                (
-                    evaluate(TeddyBearDihedralAngle(tb))
-                    for tb in n.teddy_bear_sequence()
-                ),
+            solid_ang_sum = sum_(
+                evaluate(TeddyBearDihedralAngle(tb)) for tb in n.teddy_bear_sequence()
             )
+
             return solid_ang_sum
 
         case NecklaceBodySolidAngleSum(n):
-            solid_ang_sum = reduce(
-                lambda a, b: a + b,
-                (evaluate(TripodSolidAngle(tp)) for tp in n.body_apex_tripods()),
+            solid_ang_sum = sum_(
+                evaluate(TripodSolidAngle(tp)) for tp in n.body_apex_tripods()
             )
+
             return solid_ang_sum
 
         case CoronaAngleSum(cor):
-            ang_sum = reduce(
-                lambda a, b: a + b,
-                (evaluate(MickeyMouseAngle(mm)) for mm in cor.mickey_mouse_sequence()),
+            ang_sum = sum_(
+                evaluate(MickeyMouseAngle(mm)) for mm in cor.mickey_mouse_sequence()
             )
             return ang_sum
 

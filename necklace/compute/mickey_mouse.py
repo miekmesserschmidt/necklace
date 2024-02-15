@@ -95,15 +95,3 @@ def cosine_rule_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
     left = 2 * (c + a) * (c + b) * env.cos(ang)
     right = (c + a) ** 2 + (c + b) ** 2 - (a + b) ** 2
     return left - right
-
-
-def cosine_rule_equation(m: MickeyMouse, env: Environment) -> ArithmeticObject:
-    c = env.symbol_map(m.head)
-    a = env.symbol_map(m.ear0)
-    b = env.symbol_map(m.ear1)
-
-    ang = angle(m, env)
-
-    left = 2 * (c + a) * (c + b) * env.cos(ang)
-    right = (c + a) ** 2 + (c + b) ** 2 - (a + b) ** 2
-    return left - right
