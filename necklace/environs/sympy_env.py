@@ -55,6 +55,30 @@ def default_symbol_map(obj: Any) -> Expr:
             raise ValueError(f"{obj} unrecognized")
 
 
+def concrete_symbol_map(obj: Any) -> Expr:
+    match obj:
+        case int() as i:
+            return Symbol(f"r_{i}", positive=True)
+
+        case MickeyMouseAngle(MickeyMouse(c, a, b)):
+            return mm_angle(c, a, b)
+
+        case MickeyMouseComplex(MickeyMouse(c, a, b)):
+            return mm_complex(c, a, b)
+
+        case MickeyMouseComplexMultiplier(MickeyMouse(c, a, b)):
+            return mm_complex_multiplier(c, a, b)
+
+        case TeddyBear(b, h, h0, h1):
+            return t(b, h, h0, h1)
+
+        case Tripod(a, u, v, w):
+            return p(a, u, v, w)
+
+        case _:
+            raise ValueError(f"{obj} unrecognized")
+
+
 default_symbol_map = cast(SymbolMap, default_symbol_map)
 
 

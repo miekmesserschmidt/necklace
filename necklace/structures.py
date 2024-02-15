@@ -51,6 +51,11 @@ class MickeyMouseAngle:
 
 
 @dataclass(frozen=True)
+class CosMickeyMouseAngle:
+    mm: MickeyMouse
+
+
+@dataclass(frozen=True)
 class MickeyMouseComplex:
     mm: MickeyMouse
 
@@ -98,6 +103,11 @@ class TeddyBearDihedralAngle:
 
 
 @dataclass(frozen=True)
+class CosTeddyBearDihedralAngle:
+    tb: TeddyBear
+
+
+@dataclass(frozen=True)
 class Tripod:
     """
     An arrangement representing four mutually tangent spheres called apex, leg0, leg1, leg2.
@@ -116,6 +126,13 @@ class Tripod:
     def canonical(self) -> "Tripod":
         seq = reversed(sorted((self.leg0, self.leg1, self.leg2)))
         return Tripod(self.apex, *seq)
+
+    def teddy_bears(self) -> Iterable[TeddyBear]:
+        a, b, c, d = self.apex, self.leg0, self.leg1, self.leg2
+
+        yield TeddyBear(a, b, c, d)
+        yield TeddyBear(a, c, b, d)
+        yield TeddyBear(a, d, b, c)
 
 
 @dataclass(frozen=True)
@@ -211,6 +228,16 @@ class Necklace:
 
 
 @dataclass(frozen=True)
+class NecklaceDihedralAngleSum:
+    necklace: Necklace
+
+
+@dataclass(frozen=True)
+class NecklaceBodySolidAngleSum:
+    necklace: Necklace
+
+
+@dataclass(frozen=True)
 class Corona:
     """
     An arrangement representing discs around a central disc.
@@ -251,6 +278,11 @@ class Corona:
     def triangle_sequence(self) -> Iterable["Triangle"]:
         for m in self.mickey_mouse_sequence():
             yield Triangle(m.head, m.ear0, m.ear1).canonical()
+
+
+@dataclass(frozen=True)
+class CoronaAngleSum:
+    corona: Corona
 
 
 @dataclass(frozen=True)
