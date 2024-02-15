@@ -93,6 +93,11 @@ class TeddyBear:
 
 
 @dataclass(frozen=True)
+class TeddyBearDihedralAngle:
+    tb: TeddyBear
+
+
+@dataclass(frozen=True)
 class Tripod:
     """
     An arrangement representing four mutually tangent spheres called apex, leg0, leg1, leg2.
@@ -111,6 +116,11 @@ class Tripod:
     def canonical(self) -> "Tripod":
         seq = reversed(sorted((self.leg0, self.leg1, self.leg2)))
         return Tripod(self.apex, *seq)
+
+
+@dataclass(frozen=True)
+class TripodSolidAngle:
+    tripod: Tripod
 
 
 @dataclass(frozen=True)
