@@ -36,7 +36,7 @@ class MickeyMouse:
     def labels(self) -> Set[Label]:
         return {self.head, self.ear0, self.ear1}
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "MickeyMouse":
         a = max((self.ear0, self.ear1))
         b = min((self.ear0, self.ear1))
         return MickeyMouse(self.head, a, b)
@@ -76,7 +76,7 @@ class TeddyBear:
     def labels(self) -> Set[Label]:
         return {self.head, self.head, self.hand0, self.hand1}
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "TeddyBear":
         a = max((self.hand0, self.hand1))
         b = min((self.hand0, self.hand1))
         return TeddyBear(self.body, self.head, a, b)
@@ -108,7 +108,7 @@ class Tripod:
     def labels(self) -> Set[Label]:
         return {self.apex, self.leg0, self.leg1, self.leg2}
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "Tripod":
         seq = reversed(sorted((self.leg0, self.leg1, self.leg2)))
         return Tripod(self.apex, *seq)
 
@@ -141,7 +141,7 @@ class Pooh:
             TeddyBear(self.body, self.head, self.hunny, self.hand1).canonical(),
         )
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "Pooh":
         a = max(self.hand0, self.hand1)
         b = min(self.hand0, self.hand1)
         return Pooh(self.body, self.head, a, self.hunny, b)
@@ -161,7 +161,7 @@ class Necklace:
     def labels(self) -> Set[Label]:
         return {self.body, self.head} | set(self.beads)
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "Necklace":
         b0 = tuple(self.beads)
         b1 = tuple(reversed(b0))
         canonical_rotation = max(
@@ -213,7 +213,7 @@ class Corona:
     def labels(self) -> Set[Label]:
         return {self.center} | set(self.seq)
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "Corona":
         b0 = tuple(self.seq)
         b1 = tuple(reversed(b0))
         canonical_rotation = max(
@@ -256,7 +256,7 @@ class Triangle:
             other.canonical().c,
         )
 
-    def canonical(self) -> Self:
+    def canonical(self) -> "Triangle":
         sorted_ids = sorted((self.a, self.b, self.c), reverse=True)
         return Triangle(*sorted_ids)
 
