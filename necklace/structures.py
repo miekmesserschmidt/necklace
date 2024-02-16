@@ -96,6 +96,14 @@ class TeddyBear:
         yield MickeyMouse(b, h, h1).canonical()
         yield MickeyMouse(b, h0, h1).canonical()
 
+    def body_tripod(self) -> "Tripod":
+        apex = self.body
+        a = self.head
+        b = self.hand0
+        c = self.hand1
+
+        return Tripod(apex, a, b, c)
+
 
 @dataclass(frozen=True)
 class TeddyBearDihedralAngle:

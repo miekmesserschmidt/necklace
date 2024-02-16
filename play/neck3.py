@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 comp = DefaultComputer()
 
-n = Necklace(body=0, head=1, beads=(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3))
+n = Necklace(body=0, head=1, beads=(2, 3, 3, 3, 3, 3, 3))
 t = TeddyBear(body=0, head=1, hand0=2, hand1=3)
 m = MickeyMouse(head=0, ear0=1, ear1=2)
 # %%
@@ -23,24 +23,32 @@ n_angsum = comp.compute(n)
 # %%
 # %%
 
-R1 = numpy.linspace(0.1, 2, 100)
-R3 = []
+R1 = numpy.linspace(0.1, 3, 20)
+R2 = numpy.linspace(0.5, 1, 10)
+results = []
 
-for r1 in R2:
 
-    A = n_angsum.subs(
-        {
-            r[0]: 1,
-            r[1]: r1,
-            # r[2]: r2,
-        }
-    )
-    r3 = sympy.nsolve(A - 2 * sympy.pi, (r[3],), 0.1, prec=50)
-    print(r3)
-    R3.append(sympy.Abs(r3))
+for r2 in R2:
+    R3 = []
+    for r1 in R1:
+        print(r1)
+
+        A = n_angsum.subs(
+            {
+                r[0]: 1,
+                r[1]: r1,
+                r[2]: r2,
+            }
+        )
+        r3 = sympy.nsolve(A - 2 * sympy.pi, (r[3],), 0.1, prec=50)
+        print(r3)
+        R3.append(sympy.Abs(r3))
+
+    results.append((R1, R3))
 
 # %%
-plt.plot(R2, R3)
+for Xr1, Yr3 in (results[0], results[-1]):
+    plt.plot(Xr1, Yr3)
 
 # smaller r5
 # %%
