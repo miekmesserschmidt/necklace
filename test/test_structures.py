@@ -1,5 +1,6 @@
 from necklace.structures import (
     Corona,
+    CoronaAngleSum,
     MickeyMouse,
     Necklace,
     Pooh,
@@ -38,6 +39,30 @@ def test_necklace_canonical():
 def test_corona_canonical():
     c = Corona(0, (0, 3, 2, 3, 4, 0))
     assert c.canonical() == Corona(0, (4, 3, 2, 3, 0, 0))
+
+
+def test_corona_angle_sum_mickey_mouse_counts():
+    c = Corona(0, (0, 3, 2, 3, 4, 0))
+    ang_sum = CoronaAngleSum(c)
+
+    assert ang_sum.mickey_mouse_counts() == {
+        MickeyMouse(0, 3, 0): 1,
+        MickeyMouse(0, 3, 2): 2,
+        MickeyMouse(0, 4, 3): 1,
+        MickeyMouse(0, 4, 0): 1,
+        MickeyMouse(0, 0, 0): 1,
+    }
+
+
+def test_corona_angle_sum_eq():
+    c0 = Corona(0, (3, 2, 3, 4, 0, 0))
+    c1 = Corona(0, (2, 3, 4, 0, 0, 3))
+    c2 = Corona(0, (2, 3, 4, 0, 0, 5))
+
+    assert c0 != c1
+    assert c0 != c2
+    assert CoronaAngleSum(c0) == CoronaAngleSum(c1)
+    assert CoronaAngleSum(c0) != CoronaAngleSum(c2)
 
 
 def test_triangle_canonical():

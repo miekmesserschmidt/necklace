@@ -1,7 +1,18 @@
-from collections import deque
+from collections import Counter, deque
 from dataclasses import dataclass
 from itertools import chain, permutations
-from typing import Any, Dict, Generic, Iterable, Self, Sequence, Set, Tuple, TypeAlias
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Self,
+    Sequence,
+    Set,
+    Tuple,
+    TypeAlias,
+    Counter,
+)
 
 from .tools import all_rotations
 
@@ -291,6 +302,16 @@ class Corona:
 @dataclass(frozen=True)
 class CoronaAngleSum:
     corona: Corona
+
+    def mickey_mouse_counts(self) -> Counter[MickeyMouse]:
+        return Counter(self.corona.mickey_mouse_sequence(canonical=True))
+
+    def __eq__(self, other: Self) -> bool:
+        return self.mickey_mouse_counts() == other.mickey_mouse_counts()
+
+    def __hash__(self):
+        c = self.mickey_mouse_counts()
+        return hash(tuple(c.items()))
 
 
 @dataclass(frozen=True)
