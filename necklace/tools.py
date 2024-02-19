@@ -1,8 +1,20 @@
 from collections import deque
 from functools import reduce
-from typing import Iterable, Sequence, Tuple, TypeVar
+from typing import Dict, Iterable, Protocol, Self, Sequence, Tuple, TypeVar
 
 from .core import ArithmeticObject
+
+
+class SupportsAdd(Protocol):
+    def __add__(self, other) -> Self: ...
+
+
+class SupportsMul(Protocol):
+    def __mul__(self, other) -> Self: ...
+
+
+class SupportsRMul[T](Protocol):
+    def __rmul__(self, other) -> T: ...
 
 
 def all_rotations[T](s: Sequence[T]) -> Iterable[Tuple[T, ...]]:
@@ -18,5 +30,10 @@ def all_rotations[T](s: Sequence[T]) -> Iterable[Tuple[T, ...]]:
         yield tuple(d)
 
 
-def sum_[T: ArithmeticObject](items: Iterable[T]) -> T:
+def sum_[T: SupportsAdd](items: Iterable[T]) -> T:
     return reduce(lambda a, b: a + b, items)
+
+
+def dict_dot[T, W, U, V: SupportsRMul](a: Dict[T, U], b: Dict[T, V]) -> W:
+    domain = set(a.keys()) & set(b.keys())
+    return sum_(a[k] * b[k] for k in domain)

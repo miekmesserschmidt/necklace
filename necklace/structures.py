@@ -299,7 +299,7 @@ class Corona:
             yield Triangle(m.head, m.ear0, m.ear1).canonical()
 
 
-@dataclass(frozen=True)
+@dataclass(eq=False, frozen=False)
 class CoronaAngleSum:
     corona: Corona
 
@@ -311,7 +311,7 @@ class CoronaAngleSum:
 
     def __hash__(self):
         c = self.mickey_mouse_counts()
-        return hash(tuple(c.items()))
+        return hash(frozenset(c.items()))
 
 
 @dataclass(frozen=True)

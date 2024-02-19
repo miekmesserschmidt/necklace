@@ -1,5 +1,5 @@
 from typing import List
-from necklace.tools import all_rotations, sum_
+from necklace.tools import all_rotations, dict_dot, sum_
 
 
 def test_all_rotations():
@@ -22,3 +22,10 @@ def test_sum_():
     expected = 1 + 2 + 3
 
     assert out == expected
+
+
+def test_dict_dot():
+    a = {0: 1, 1: 2}
+    b = {1: 3, 2: 4}
+
+    assert dict_dot(a, b) == 6

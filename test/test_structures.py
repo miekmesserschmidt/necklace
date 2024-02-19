@@ -62,7 +62,36 @@ def test_corona_angle_sum_eq():
     assert c0 != c1
     assert c0 != c2
     assert CoronaAngleSum(c0) == CoronaAngleSum(c1)
+    assert hash(CoronaAngleSum(c0)) == hash(CoronaAngleSum(c1))
     assert CoronaAngleSum(c0) != CoronaAngleSum(c2)
+
+
+def test_corona_angle_sum_mickey_mouse_coutns():
+    c0 = Corona(center=0, seq=(1, 0, 0, 1))
+    c1 = Corona(center=0, seq=(1, 1, 0, 0))
+
+    assert (
+        CoronaAngleSum(c0).mickey_mouse_counts()
+        == CoronaAngleSum(c1).mickey_mouse_counts()
+    )
+
+
+def test_corona_angle_sum_eq2():
+    c0 = Corona(0, (1, 2, 1, 2, 1, 1, 1, 1, 1))
+    c1 = Corona(0, (1, 2, 1, 1, 2, 1, 1, 1, 1))
+
+    assert c0 != c1
+    assert CoronaAngleSum(c0) == CoronaAngleSum(c1)
+    assert hash(CoronaAngleSum(c0)) == hash(CoronaAngleSum(c1))
+
+
+def test_corona_angle_sum_eq3():
+    c0 = Corona(center=0, seq=(1, 0, 0, 1))
+    c1 = Corona(center=0, seq=(1, 1, 0, 0))
+
+    assert c0 != c1
+    assert CoronaAngleSum(c0) == CoronaAngleSum(c1)
+    assert hash(CoronaAngleSum(c0)) == hash(CoronaAngleSum(c1))
 
 
 def test_triangle_canonical():
