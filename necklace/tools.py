@@ -1,8 +1,8 @@
+import math
+from typing import Any, Iterable, List, Tuple
 from collections import deque
 from functools import reduce
-from typing import Dict, Iterable, Protocol, Self, Sequence, Tuple, TypeVar
-
-from .core import ArithmeticObject
+from typing import Dict, Iterable, Protocol, Self, Sequence, Tuple
 
 
 class SupportsAdd(Protocol):
@@ -37,3 +37,12 @@ def sum_[T: SupportsAdd](items: Iterable[T]) -> T:
 def dict_dot[T, W, U, V: SupportsRMul](a: Dict[T, U], b: Dict[T, V]) -> W:
     domain = set(a.keys()) & set(b.keys())
     return sum_(a[k] * b[k] for k in domain)
+
+
+def weighted_range(weight: Any, max_val: Any) -> Iterable[int]:
+    top = math.ceil(max_val / weight)
+
+    if max_val % weight == 0:
+        top += 1
+
+    return range(0, top)
