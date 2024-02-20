@@ -1,106 +1,63 @@
-from itertools import product
-from typing import Callable, Dict, Iterable, Set, TypeAlias
+from collections import Counter, deque
+from itertools import chain
+import itertools
+from typing import Dict, Iterable, List
 
-import sympy
-
-from .tools import dict_dot
-
-from .core import ArithmeticObject
-
-from .compare import (
-    Bound,
-    Equal,
-    Strict,
-    corona_lower_bound,
-    corona_upper_bound,
-)
 from .structures import Corona, Label, MickeyMouse
 
 
-Acceptor: TypeAlias = Callable[[Corona], bool]
-Continue: TypeAlias = Callable[[Corona], bool]
-BoundComputer: TypeAlias = Callable[[Corona], Bound]
+def _count_ear_in_mickey_mouse(mm: MickeyMouse, ear) -> int:
+    return len([i for i in [mm.ear0, mm.ear1] if i == ear])
 
 
-def lower_ok(bound: Bound) -> bool:
-    match bound:
-        case Equal(val):
-            return val <= 2 * sympy.pi
-        case Strict(val):
-            return val < 2 * sympy.pi
-        case _:
-            raise ValueError("wat?")
+def _count_ear_occurrences_in_mickey_mouse_dict(
+    mm_dict: Dict[MickeyMouse, int], ear: Label
+) -> int:
+    return sum(
+        count * _count_ear_in_mickey_mouse(mm, ear) for mm, count in mm_dict.items()
+    )
 
 
-def upper_ok(bound: Bound) -> bool:
-    match bound:
-        case Equal(val):
-            return 2 * sympy.pi <= val
-        case Strict(val):
-            return 2 * sympy.pi < val
-        case _:
-            raise ValueError("wat?")
+def mod2_ears_ok(mm_dict: Dict[MickeyMouse, int]) -> bool:
+    ears = set(chain.from_iterable([m.ear0, m.ear1] for m in mm_dict.keys()))
+    return all(
+        _count_ear_occurrences_in_mickey_mouse_dict(mm_dict, ear) % 2 == 0
+        for ear in ears
+    )
 
 
-def gen_coronas(
-    starter: Corona,
-    symbols: Set[Label],
-    lower_bound_computer: BoundComputer = corona_lower_bound,
-    upper_bound_computer: BoundComputer = corona_upper_bound,
-) -> Iterable[Corona]:
+def coronas_from_mickey_mouse_dict(mm_dict: Dict[MickeyMouse, int]) -> Iterable[Corona]:
 
-    c = starter.center
-    seq = list(starter.seq)
+    all_heads = set(mm.head for mm in mm_dict.keys())
+    assert len(all_heads) == 1
+    assert mod2_ears_ok(mm_dict)
 
-    for s in symbols:
-        new_cor = Corona(c, seq=tuple(seq + [s]))
+    length = sum(n for n in mm_dict.values())
 
-        lower_b = lower_bound_computer(new_cor)
-        upper_b = upper_bound_computer(new_cor)
+    (center,) = all_heads
+    ears = set(itertools.chain.from_iterable((m.ear0, m.ear1) for m in mm_dict.keys()))
 
-        # accept the corona
-        if lower_ok(lower_b) and upper_ok(upper_b):
-            yield new_cor
+    def extend(partial_seq: List[Label]):
 
-        # continue generating
-        if lower_b.value <= 2 * sympy.pi:
-            yield from gen_coronas(
-                new_cor,
-                symbols,
-                lower_bound_computer=lower_bound_computer,
-                upper_bound_computer=upper_bound_computer,
-            )
+        if len(partial_seq) == length:
+            s = deque(partial_seq)
+            t = s.copy()
+            t.rotate(-1)
+            mm_list = [MickeyMouse(center, a, b).canonical() for a, b in zip(s, t)]
+            mm_count = Counter(mm_list)
+            if mm_count == mm_dict:
+                yield Corona(center, tuple(partial_seq))
 
+        elif len(partial_seq) < length:
 
-def gen_all_mickey_mouses(
-    centers: Set[Label], ears: Set[Label]
-) -> Iterable[MickeyMouse]:
-    for c, a, b in product(centers, ears, ears):
-        yield MickeyMouse(c, a, b)
+            for new_s in ears:
+                s = list(partial_seq) + [new_s]
+                t = s[1:]
 
+                mm_list = [MickeyMouse(center, a, b).canonical() for a, b in zip(s, t)]
+                mm_count: Counter = Counter(mm_list)
 
-def gen_mickey_mouse_dicts(
-    start_dict: Dict[MickeyMouse, int],
-    mickey_mouse_set: Set[MickeyMouse],
-    lower_vec: Dict[MickeyMouse, Bound],
-    upper_vec: Dict[MickeyMouse, Bound],
-):
+                if all(v <= mm_dict[k] for k, v in mm_count.items()):
+                    yield from extend(s)
 
-    if start_dict:
-        lower_bound = dict_dot(start_dict, lower_vec)
-        upper_bound = dict_dot(start_dict, upper_vec)
-
-        if lower_ok(lower_bound) and upper_ok(upper_bound):
-            yield start_dict
-
-    if (not start_dict) or (lower_bound.value <= 2 * sympy.pi):
-        for mm in mickey_mouse_set:
-            new_dict = start_dict.copy()
-            new_dict[mm] += 1
-
-            yield from gen_mickey_mouse_dicts(
-                new_dict, mickey_mouse_set, lower_vec, upper_vec
-            )
-
-
-def gen_coronas(mickey_mouse_dict: Dict[MickeyMouse, int]) -> Iterable[Corona]: ...
+    return extend([])

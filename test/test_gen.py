@@ -1,32 +1,12 @@
-from collections import defaultdict
-from necklace.gen import gen_coronas, gen_all_mickey_mouses
-from necklace.structures import Corona, CoronaAngleSum, MickeyMouse
+from necklace.gen import coronas_from_mickey_mouse_dict
+from necklace.structures import Corona, CoronaAngleSum
 
 
-def test_gen_cor():
+def test_coronas_from_mm_dict():
+    c = Corona(1, (0, 0, 1, 1, 0, 1, 0, 2))
+    mm_dict = CoronaAngleSum(c).mickey_mouse_counts()
 
-    G = gen_coronas(Corona(0, tuple()), {0, 1})
+    A = list(coronas_from_mickey_mouse_dict(mm_dict))
 
-    results = defaultdict(list)
-    for cor in G:
-        results[CoronaAngleSum(cor.canonical())].append(cor)
-
-    assert len(results) == 11
-
-
-def test_gen_mickey_mouses():
-    centers = {0, 1}
-    ears = {2, 3}
-
-    out = set(gen_all_mickey_mouses(centers, ears))
-
-    assert out == {
-        MickeyMouse(0, 2, 2),
-        MickeyMouse(0, 2, 3),
-        MickeyMouse(0, 3, 2),
-        MickeyMouse(0, 3, 3),
-        MickeyMouse(1, 2, 2),
-        MickeyMouse(1, 2, 3),
-        MickeyMouse(1, 3, 2),
-        MickeyMouse(1, 3, 3),
-    }
+    assert c in A
+    assert all(CoronaAngleSum(d).mickey_mouse_counts() == mm_dict for d in A)
